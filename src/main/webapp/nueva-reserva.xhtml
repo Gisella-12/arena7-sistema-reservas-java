@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="jakarta.faces.passthrough">
+
+<f:metadata>
+    <f:viewParam name="id"
+                 value="#{nuevaReservaBean.id}"
+                 converterMessage="El identificador de la reserva no es válido.">
+        <f:validateLongRange minimum="1"/>
+    </f:viewParam>
+
+    <f:viewAction action="#{nuevaReservaBean.cargarParaEditar}"
+                  onPostback="false"/>
+</f:metadata>
+
+<h:head>
+    <title>Arena 7 - Reserva</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+</h:head>
+
+<h:body styleClass="bg-light">
+
+    <nav class="navbar navbar-dark bg-success shadow-sm">
+        <div class="container d-flex flex-wrap gap-2">
+            <h:link outcome="dashboard"
+                    value="Arena 7"
+                    styleClass="navbar-brand fw-bold"/>
+
+            <h:link outcome="calendario"
+                    value="Volver al calendario"
+                    styleClass="btn btn-outline-light"/>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+
+        <h1 class="fw-bold text-success">
+            <h:outputText
+                    value="#{nuevaReservaBean.edicion ? 'Editar reserva' : 'Nueva reserva'}"/>
+        </h1>
+
+        <p class="text-muted mb-4">
+            Completa los datos del cliente y de la reserva.
+        </p>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <h:form id="reservaForm">
+
+                    <h:messages styleClass="mb-3"
+                                infoClass="text-success"
+                                warnClass="text-warning"
+                                errorClass="text-danger"/>
+
+                    <h2 class="h5 mb-3">Datos del cliente</h2>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="dni"
+                                           value="DNI"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="dni"
+                                         value="#{nuevaReservaBean.reserva.dni}"
+                                         maxlength="8"
+                                         required="true"
+                                         requiredMessage="Ingresa el DNI."
+                                         validatorMessage="El DNI debe tener 8 dígitos."
+                                         p:inputmode="numeric"
+                                         styleClass="form-control">
+                                <f:validateRegex pattern="[0-9]{8}"/>
+                            </h:inputText>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="cliente"
+                                           value="Nombre del cliente"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="cliente"
+                                         value="#{nuevaReservaBean.reserva.cliente}"
+                                         maxlength="100"
+                                         required="true"
+                                         requiredMessage="Ingresa el nombre del cliente."
+                                         styleClass="form-control"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="telefono"
+                                           value="Teléfono"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="telefono"
+                                         value="#{nuevaReservaBean.reserva.telefono}"
+                                         maxlength="15"
+                                         required="true"
+                                         requiredMessage="Ingresa el teléfono."
+                                         p:type="tel"
+                                         styleClass="form-control"/>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4"/>
+                    <h2 class="h5 mb-3">Datos de la reserva</h2>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="cancha"
+                                           value="Cancha"
+                                           styleClass="form-label"/>
+
+                            <h:selectOneMenu id="cancha"
+                                             value="#{nuevaReservaBean.reserva.cancha}"
+                                             validatorMessage="Selecciona una cancha."
+                                             styleClass="form-select">
+
+                                <f:selectItem itemLabel="Selecciona una cancha"
+                                              itemValue="0"/>
+                                <f:selectItem itemLabel="Cancha 1" itemValue="1"/>
+                                <f:selectItem itemLabel="Cancha 2" itemValue="2"/>
+                                <f:selectItem itemLabel="Cancha 3" itemValue="3"/>
+                                <f:selectItem itemLabel="Cancha 4" itemValue="4"/>
+
+                                <f:validateLongRange minimum="1" maximum="4"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="fecha"
+                                           value="Fecha"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="fecha"
+                                         value="#{nuevaReservaBean.reserva.fecha}"
+                                         required="true"
+                                         requiredMessage="Selecciona la fecha."
+                                         converterMessage="Selecciona una fecha válida."
+                                         p:type="date"
+                                         styleClass="form-control">
+
+                                <f:convertDateTime type="localDate"
+                                                   pattern="yyyy-MM-dd"/>
+                            </h:inputText>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="hora"
+                                           value="Horario"
+                                           styleClass="form-label"/>
+
+                            <h:selectOneMenu id="hora"
+                                             value="#{nuevaReservaBean.reserva.hora}"
+                                             required="true"
+                                             requiredMessage="Selecciona un horario."
+                                             styleClass="form-select">
+
+                                <f:selectItem itemLabel="Selecciona un horario"
+                                              itemValue=""
+                                              noSelectionOption="true"/>
+
+                                <f:selectItem itemLabel="Mañana: 8:00 a. m. - 9:00 a. m."
+                                              itemValue="08"/>
+                                <f:selectItem itemLabel="Mañana: 9:00 a. m. - 10:00 a. m."
+                                              itemValue="09"/>
+                                <f:selectItem itemLabel="Mañana: 10:00 a. m. - 11:00 a. m."
+                                              itemValue="10"/>
+                                <f:selectItem itemLabel="Mañana: 11:00 a. m. - 12:00 p. m."
+                                              itemValue="11"/>
+
+                                <f:selectItem itemLabel="Tarde: 12:00 p. m. - 1:00 p. m."
+                                              itemValue="12"/>
+                                <f:selectItem itemLabel="Tarde: 1:00 p. m. - 2:00 p. m."
+                                              itemValue="13"/>
+                                <f:selectItem itemLabel="Tarde: 2:00 p. m. - 3:00 p. m."
+                                              itemValue="14"/>
+                                <f:selectItem itemLabel="Tarde: 3:00 p. m. - 4:00 p. m."
+                                              itemValue="15"/>
+                                <f:selectItem itemLabel="Tarde: 4:00 p. m. - 5:00 p. m."
+                                              itemValue="16"/>
+
+                                <f:selectItem itemLabel="Noche: 6:00 p. m. - 7:00 p. m."
+                                              itemValue="18"/>
+                                <f:selectItem itemLabel="Noche: 7:00 p. m. - 8:00 p. m."
+                                              itemValue="19"/>
+                                <f:selectItem itemLabel="Noche: 8:00 p. m. - 9:00 p. m."
+                                              itemValue="20"/>
+                                <f:selectItem itemLabel="Noche: 9:00 p. m. - 10:00 p. m."
+                                              itemValue="21"/>
+
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="pago"
+                                           value="Método de pago"
+                                           styleClass="form-label"/>
+
+                            <h:selectOneMenu id="pago"
+                                             value="#{nuevaReservaBean.reserva.pago}"
+                                             required="true"
+                                             requiredMessage="Selecciona el método de pago."
+                                             styleClass="form-select">
+
+                                <f:selectItem itemLabel="Selecciona un método"
+                                              itemValue=""
+                                              noSelectionOption="true"/>
+                                <f:selectItem itemLabel="Yape" itemValue="Yape"/>
+                                <f:selectItem itemLabel="Plin" itemValue="Plin"/>
+                                <f:selectItem itemLabel="Efectivo" itemValue="Efectivo"/>
+
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="codigoPago"
+                                           value="Código de pago (opcional)"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="codigoPago"
+                                         value="#{nuevaReservaBean.reserva.codigoPago}"
+                                         maxlength="50"
+                                         styleClass="form-control"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="monto"
+                                           value="Monto (S/)"
+                                           styleClass="form-label"/>
+
+                            <h:inputText id="monto"
+                                         value="#{nuevaReservaBean.reserva.monto}"
+                                         required="true"
+                                         requiredMessage="Ingresa el monto."
+                                         converterMessage="Ingresa un monto válido."
+                                         validatorMessage="El monto debe estar entre 0.01 y 99999999.99."
+                                         p:type="number"
+                                         p:min="0.01"
+                                         p:max="99999999.99"
+                                         p:step="0.01"
+                                         styleClass="form-control">
+
+                                <f:convertNumber locale="en_US"
+                                                 groupingUsed="false"
+                                                 maxFractionDigits="2"/>
+
+                                <f:validateDoubleRange minimum="0.01"
+                                                       maximum="99999999.99"/>
+                            </h:inputText>
+                        </div>
+
+                        <div class="col-12">
+                            <h:outputLabel for="detalle"
+                                           value="Detalle (opcional)"
+                                           styleClass="form-label"/>
+
+                            <h:inputTextarea id="detalle"
+                                             value="#{nuevaReservaBean.reserva.detalle}"
+                                             rows="3"
+                                             styleClass="form-control"/>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+
+                        <h:commandButton
+                                value="#{nuevaReservaBean.edicion ? 'Guardar cambios' : 'Guardar reserva'}"
+                                action="#{nuevaReservaBean.guardar}"
+                                styleClass="btn btn-success"/>
+
+                        <h:link outcome="calendario"
+                                value="Cancelar"
+                                styleClass="btn btn-outline-secondary"/>
+
+                        <button type="button"
+                                class="btn btn-outline-success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#ayudaReserva">
+                            Ayuda para reservar
+                        </button>
+
+                    </div>
+
+                </h:form>
+
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal fade"
+         id="ayudaReserva"
+         tabindex="-1"
+         aria-labelledby="tituloAyudaReserva"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5"
+                        id="tituloAyudaReserva">
+                        ¿Cómo registrar una reserva?
+                    </h2>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Ingresa el DNI, nombre y teléfono del cliente.
+                    </p>
+
+                    <p>
+                        Selecciona una cancha, fecha y horario disponible.
+                        Puedes consultar la disponibilidad en el calendario.
+                    </p>
+
+                    <p>
+                        Si el horario ya está reservado, el sistema
+                        mostrará un aviso y deberás elegir otro.
+                    </p>
+
+                    <p class="mb-0">
+                        Selecciona Yape, Plin o Efectivo e ingresa
+                        el monto. El código de pago es opcional.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-success"
+                            data-bs-dismiss="modal">
+                        Entendido
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</h:body>
+</html>

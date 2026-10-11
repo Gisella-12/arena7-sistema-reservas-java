@@ -9,7 +9,7 @@ public class Conexion {
             "jdbc:mysql://localhost:3306/cancha_deportiva?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 
     private static final String USUARIO = "root";
-    private static final String CLAVE = "";
+    private static final String CLAVE = "Mysql12345";
 
     public static Connection conectar() {
         Connection conexion = null;

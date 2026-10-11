@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="jakarta.faces.passthrough">
+
+<h:head>
+    <title>Arena 7 - Gestión de Reservas</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+
+    <style>
+        body { background-color: #f4f6f8; }
+        .summary-card, .table-card {
+            border: 0;
+            border-radius: 16px;
+        }
+        .table thead th {
+            background-color: #198754;
+            color: white;
+        }
+        .table tbody td { vertical-align: middle; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <nav class="navbar navbar-dark bg-success shadow-sm">
+        <div class="container">
+            <div class="d-flex align-items-center gap-2">
+                <h:graphicImage value="/logo.png"
+                                alt="Logo Arena 7"
+                                style="height: 45px; width: auto;"/>
+
+                <h:link outcome="dashboard"
+                        value="Arena 7"
+                        styleClass="navbar-brand fw-bold mb-0"/>
+            </div>
+
+            <h:link outcome="dashboard"
+                    value="Volver al panel"
+                    styleClass="btn btn-outline-light btn-sm"/>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Gestión de reservas</h2>
+                <p class="text-muted mb-0">
+                    Consulta las reservas registradas en Arena 7.
+                </p>
+            </div>
+
+            <h:link outcome="nueva-reserva"
+                    value="Nueva reserva"
+                    styleClass="btn btn-success"/>
+        </div>
+
+        <h:form id="reservasForm">
+
+            <h:messages globalOnly="true"
+                        styleClass="mb-3"
+                        infoClass="text-success"
+                        warnClass="text-warning"
+                        errorClass="text-danger"
+                        fatalClass="text-danger"
+                        showDetail="false"/>
+
+            <h:panelGroup layout="block"
+                          rendered="#{not reservaBean.errorCarga}">
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card summary-card shadow-sm">
+                            <div class="card-body">
+                                <p class="text-muted mb-1">Reservas del día</p>
+                                <h3 class="fw-bold mb-0">
+                                    <h:outputText value="#{reservaBean.reservasDelDia}"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card summary-card shadow-sm">
+                            <div class="card-body">
+                                <p class="text-muted mb-1">Confirmadas en total</p>
+                                <h3 class="fw-bold mb-0">
+                                    <h:outputText value="#{reservaBean.confirmadas}"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card summary-card shadow-sm">
+                            <div class="card-body">
+                                <p class="text-muted mb-1">Pendientes en total</p>
+                                <h3 class="fw-bold mb-0">
+                                    <h:outputText value="#{reservaBean.pendientes}"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <h:outputLabel for="cliente"
+                                           value="Buscar cliente"
+                                           styleClass="form-label fw-semibold"/>
+
+                            <h:inputText id="cliente"
+                                         value="#{reservaBean.buscarCliente}"
+                                         p:placeholder="Nombre o DNI"
+                                         styleClass="form-control"/>
+                        </div>
+
+                        <div class="col-md-3">
+                            <h:outputLabel for="fecha"
+                                           value="Fecha"
+                                           styleClass="form-label fw-semibold"/>
+
+                            <h:inputText id="fecha"
+                                         value="#{reservaBean.buscarFecha}"
+                                         p:type="date"
+                                         styleClass="form-control"
+                                         converterMessage="Selecciona una fecha válida.">
+                                <f:convertDateTime type="localDate"
+                                                   pattern="yyyy-MM-dd"/>
+                            </h:inputText>
+
+                            <h:message for="fecha"
+                                       styleClass="text-danger small"/>
+                        </div>
+
+                        <div class="col-md-3">
+                            <h:outputLabel for="estado"
+                                           value="Estado"
+                                           styleClass="form-label fw-semibold"/>
+
+                            <h:selectOneMenu id="estado"
+                                             value="#{reservaBean.buscarEstado}"
+                                             styleClass="form-select">
+                                <f:selectItem itemLabel="Todos" itemValue=""/>
+                                <f:selectItem itemLabel="Confirmado"
+                                              itemValue="Confirmado"/>
+                                <f:selectItem itemLabel="Confirmada"
+                                              itemValue="Confirmada"/>
+                                <f:selectItem itemLabel="Pendiente"
+                                              itemValue="Pendiente"/>
+                                <f:selectItem itemLabel="Cancelado"
+                                              itemValue="Cancelado"/>
+                                <f:selectItem itemLabel="Cancelada"
+                                              itemValue="Cancelada"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-end">
+                            <h:commandButton value="Buscar"
+                                             action="#{reservaBean.buscar}"
+                                             styleClass="btn btn-outline-success w-100"/>
+                        </div>
+
+                    </div>
+
+                    <h:commandButton value="Limpiar filtros"
+                                     action="#{reservaBean.limpiar}"
+                                     styleClass="btn btn-outline-secondary btn-sm mt-3">
+                        <f:ajax execute="@this"
+                                render="@form"
+                                resetValues="true"/>
+                    </h:commandButton>
+                </div>
+            </div>
+
+            <h:panelGroup layout="block"
+                          rendered="#{not reservaBean.errorCarga}">
+
+                <div class="card table-card shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+
+                            <h:dataTable value="#{reservaBean.reservasFiltradas}"
+                                         var="reserva"
+                                         styleClass="table table-hover mb-0">
+
+                                <h:column>
+                                    <f:facet name="header">ID</f:facet>
+                                    <h:outputText value="#{reserva.id}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">DNI</f:facet>
+                                    <h:outputText value="#{reserva.dni}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Cliente</f:facet>
+                                    <h:outputText value="#{reserva.cliente}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Cancha</f:facet>
+                                    <h:outputText value="Cancha #{reserva.cancha}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Fecha</f:facet>
+                                    <h:outputText value="#{reserva.fecha}">
+                                        <f:convertDateTime type="localDate"
+                                                           pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Hora</f:facet>
+                                    <h:outputText value="#{reserva.horaFormateada}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Pago</f:facet>
+                                    <h:outputText value="#{reserva.pago}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Monto (S/)</f:facet>
+                                    <h:outputText value="#{reserva.monto}">
+                                        <f:convertNumber minFractionDigits="2"
+                                                         maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Estado</f:facet>
+                                    <h:outputText value="#{reserva.estado}"
+                                                  styleClass="badge #{reserva.cancelada ? 'bg-danger' : 'bg-secondary'}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Acciones</f:facet>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h:link outcome="nueva-reserva"
+                                                value="Editar"
+                                                rendered="#{not reserva.cancelada}"
+                                                styleClass="btn btn-outline-primary btn-sm">
+                                            <f:param name="id"
+                                                     value="#{reserva.id}"/>
+                                        </h:link>
+
+                                        <h:commandButton value="Cancelar"
+                                                         action="#{reservaBean.cancelar(reserva.id)}"
+                                                         rendered="#{not reserva.cancelada}"
+                                                         onclick="if (!confirm('¿Deseas cancelar esta reserva?')) return false;"
+                                                         styleClass="btn btn-outline-danger btn-sm">
+                                            <f:ajax execute="@this"
+                                                    render="@form"/>
+                                        </h:commandButton>
+
+                                        <h:outputText value="Reserva cancelada"
+                                                      rendered="#{reserva.cancelada}"
+                                                      styleClass="text-muted small"/>
+                                    </div>
+                                </h:column>
+
+                            </h:dataTable>
+
+                        </div>
+                    </div>
+                </div>
+
+                <h:panelGroup layout="block"
+                              rendered="#{empty reservaBean.reservasFiltradas}"
+                              styleClass="alert alert-info mt-3">
+                    No se encontraron reservas con esos filtros.
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+    </main>
+
+</h:body>
+</html>
